@@ -1,24 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Clock, ExternalLink } from 'lucide-react';
 import { NewsCategory } from '../types';
-import { getTickerDataForCategory } from '../data/tickerData';
+import { useTicker } from '../hooks/useTicker';
 
 interface SlimNewsTickerProps {
   category: NewsCategory;
 }
 
 const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
-  const [newsData, setNewsData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simular carga de datos
-    setTimeout(() => {
-      const data = getTickerDataForCategory(category);
-      setNewsData(data);
-      setLoading(false);
-    }, 1000);
-  }, [category]);
+  const { tickerItems: newsData, loading } = useTicker(category);
 
   const getSeverityColor = (severity: string) => {
     switch(severity) {
@@ -83,18 +73,35 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
             }
           }
           .animate-scroll {
-            animation: scroll 20s linear infinite;
+            animation: scroll 30s linear infinite;
+          }
+          .animate-scroll:hover {
+            animation-play-state: paused;
+          }
+          .ticker-card {
+            transition: all 0.3s ease;
+          }
+          .ticker-card:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           }
         `}</style>
 
         {/* Scrolling cards */}
         <div className="flex items-center gap-3 h-full pl-32 animate-scroll">
           {duplicatedNews.map((news, index) => (
-            <div
+            <a
               key={`${news.id}-${index}`}
-              className="flex-shrink-0"
+              href={news.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 no-underline"
+              onClick={(e) => {
+                // Pausar animación brevemente al hacer clic
+                e.currentTarget.parentElement?.classList.add('hover:pause');
+              }}
             >
-              <div className={`h-12 bg-gray-50 dark:bg-gray-800/95 backdrop-blur-sm rounded-lg border ${getSeverityColor(news.severity)} overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 cursor-pointer px-4 flex items-center gap-3`}>
+              <div className={`ticker-card h-12 bg-gray-50 dark:bg-gray-800/95 backdrop-blur-sm rounded-lg border ${getSeverityColor(news.severity)} overflow-hidden shadow-sm px-4 flex items-center gap-3 group`}>
                 {/* Icon & Severity */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-lg">{news.icon}</span>
@@ -104,7 +111,7 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-gray-900 dark:text-white font-semibold text-sm whitespace-nowrap">
+                <h3 className="text-gray-900 dark:text-white font-semibold text-sm whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {news.title}
                 </h3>
 
@@ -119,13 +126,13 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
                   <span className="whitespace-nowrap">{news.time}</span>
                 </div>
 
-                {/* Source */}
+                {/* Source with link indicator */}
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                   <span className="text-xs text-cyan-600 dark:text-cyan-400 font-medium whitespace-nowrap">{news.source}</span>
-                  <ExternalLink className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                  <ExternalLink className="w-3 h-3 text-cyan-600 dark:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>

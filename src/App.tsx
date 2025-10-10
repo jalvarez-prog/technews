@@ -1,6 +1,7 @@
 import { useState, lazy, Suspense } from 'react';
 import { Header } from './components/Header';
 import { CategoryNav } from './components/CategoryNav';
+import { DatabaseStatus } from './components/DatabaseStatus';
 import { useTheme } from './hooks/useTheme';
 import { NewsCategory } from './types';
 import { Loader2 } from 'lucide-react';
@@ -47,6 +48,9 @@ function App() {
           </div>
         </div>
       </footer>
+      
+      {/* Indicador de estado de la base de datos */}
+      <DatabaseStatus />
     </div>
   );
 }

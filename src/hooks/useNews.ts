@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NewsArticle, NewsCategory } from '../types';
-import { fetchMultipleFeeds } from '../utils/rssParser';
-import { categories } from '../config/categories';
+import { supabase } from '../lib/supabase';
 import { mockNewsByCategory } from '../data/mockNews';
 
 export function useNews(category: NewsCategory) {
@@ -20,6 +19,7 @@ export function useNews(category: NewsCategory) {
       const cached = sessionStorage.getItem(cacheKey);
       const cacheTime = sessionStorage.getItem(`${cacheKey}-time`);
 
+      // Check cache first (5 minutes)
       if (cached && cacheTime) {
         const age = Date.now() - parseInt(cacheTime);
         if (age < 300000) {
@@ -32,33 +32,50 @@ export function useNews(category: NewsCategory) {
       }
 
       try {
-        const categoryConfig = categories.find(c => c.id === category);
-        if (!categoryConfig) {
-          throw new Error('Category not found');
+        // Fetch from Supabase
+        const { data, error: supabaseError } = await supabase
+          .from('news')
+          .select('*')
+          .eq('category', category)
+          .order('pub_date', { ascending: false })
+          .limit(20);
+
+        if (supabaseError) {
+          console.error('Supabase error:', supabaseError);
+          // Fallback to mock data if Supabase fails
+          const fallbackNews = mockNewsByCategory[category] || [];
+          if (mounted) {
+            setArticles(fallbackNews);
+            setError('Using cached data. Live updates temporarily unavailable.');
+          }
+          return;
         }
 
-        // Temporarily use mock data
-        // TODO: Replace with real API call when API key is configured
-        const USE_MOCK_DATA = true;
-        
-        let news: NewsArticle[];
-        if (USE_MOCK_DATA) {
-          // Simulate loading delay
-          await new Promise(resolve => setTimeout(resolve, 500));
-          news = mockNewsByCategory[category] || [];
-        } else {
-          news = await fetchMultipleFeeds(categoryConfig.feeds, category);
-        }
+        // Transform Supabase data to match NewsArticle interface
+        const news: NewsArticle[] = (data || []).map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          link: item.link,
+          pubDate: item.pub_date,
+          source: item.source,
+          category: item.category,
+          imageUrl: item.image_url
+        }));
 
         if (mounted) {
           setArticles(news);
+          // Cache the results
           sessionStorage.setItem(cacheKey, JSON.stringify(news));
           sessionStorage.setItem(`${cacheKey}-time`, Date.now().toString());
         }
       } catch (err) {
         if (mounted) {
-          setError('Error loading news');
-          console.error(err);
+          // Fallback to mock data on error
+          const fallbackNews = mockNewsByCategory[category] || [];
+          setArticles(fallbackNews);
+          setError('Error loading news. Showing cached content.');
+          console.error('Error fetching news:', err);
         }
       } finally {
         if (mounted) {

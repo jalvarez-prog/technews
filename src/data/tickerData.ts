@@ -8,6 +8,7 @@ interface TickerNewsItem {
   source: string;
   time: string;
   icon: string;
+  link?: string;
 }
 
 const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
@@ -19,7 +20,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "critical",
       source: "SecurityWeek",
       time: "1h",
-      icon: "🔴"
+      icon: "🔴",
+      link: "https://www.securityweek.com"
     },
     {
       id: 2,
@@ -28,7 +30,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "The Hacker News",
       time: "3h",
-      icon: "⚠️"
+      icon: "⚠️",
+      link: "https://thehackernews.com"
     },
     {
       id: 3,
@@ -37,7 +40,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "Bleeping Computer",
       time: "5h",
-      icon: "🔸"
+      icon: "🔸",
+      link: "https://www.bleepingcomputer.com"
     },
     {
       id: 4,
