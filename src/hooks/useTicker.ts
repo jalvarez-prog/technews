@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { NewsCategory } from '../types';
 import { supabase } from '../lib/supabase';
 import { getTickerDataForCategory } from '../data/tickerData';
+import { getSafeArticleUrl } from '../utils/linkUtils';
 
 interface TickerNewsItem {
   id: string;
@@ -84,11 +85,11 @@ export function useTicker(category: NewsCategory) {
           if (transformedData.length > 0) {
             setTickerItems(transformedData);
           } else {
-            // Si no hay datos, usar mock con links generados
+            // Si no hay datos, usar mock con links seguros
             const mockData = getTickerDataForCategory(category).map(item => ({
               ...item,
               id: String(item.id),
-              link: item.link || `https://example.com/news/${item.id}`
+              link: item.link || getSafeArticleUrl(item.link, item.source, item.title)
             }));
             setTickerItems(mockData);
           }
@@ -100,7 +101,7 @@ export function useTicker(category: NewsCategory) {
           const mockData = getTickerDataForCategory(category).map(item => ({
             ...item,
             id: String(item.id),
-            link: item.link || `https://example.com/news/${item.id}`
+            link: item.link || getSafeArticleUrl(item.link, item.source, item.title)
           }));
           setTickerItems(mockData);
         }

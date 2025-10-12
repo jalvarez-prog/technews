@@ -52,16 +52,23 @@ export function useNews(category: NewsCategory) {
         }
 
         // Transform Supabase data to match NewsArticle interface
-        const news: NewsArticle[] = (data || []).map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          link: item.link,
-          pubDate: item.pub_date,
-          source: item.source,
-          category: item.category,
-          imageUrl: item.image_url
-        }));
+        const news: NewsArticle[] = (data || []).map(item => {
+          // Debug logging
+          if (!item.link) {
+            console.warn(`Article "${item.title}" has no link, will use fallback`);
+          }
+          
+          return {
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            link: item.link || '', // Ensure link is at least an empty string
+            pubDate: item.pub_date,
+            source: item.source,
+            category: item.category,
+            imageUrl: item.image_url
+          };
+        });
 
         if (mounted) {
           setArticles(news);

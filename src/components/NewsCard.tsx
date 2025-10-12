@@ -1,6 +1,7 @@
-import { ExternalLink, Clock, Image as ImageIcon } from 'lucide-react';
+import { ExternalLink, Clock, Image as ImageIcon, AlertCircle } from 'lucide-react';
 import { NewsArticle } from '../types';
 import { useState } from 'react';
+import { getSafeArticleUrl, trackLinkClick, getDomainFromUrl, isValidUrl } from '../utils/linkUtils';
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -18,13 +19,30 @@ export function NewsCard({ article }: NewsCardProps) {
     return `Hace ${Math.floor(seconds / 86400)} días`;
   };
 
+  // Get safe URL for the article
+  const articleUrl = getSafeArticleUrl(article.link, article.source, article.title);
+  const isOriginalLink = isValidUrl(article.link);
+  const domain = getDomainFromUrl(articleUrl);
+
+  // Handle click tracking
+  const handleClick = () => {
+    // Simple non-blocking tracking
+    trackLinkClick(article.id, article.title, article.source, articleUrl);
+    
+    if (!isOriginalLink) {
+      console.info(`Using search fallback for: ${article.title}`);
+    }
+  };
+
   return (
     <article className="group bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-200 dark:border-gray-700">
       <a
-        href={article.link}
+        href={articleUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="block"
+        onClick={handleClick}
+        title={`Leer artículo completo${domain ? ` en ${domain}` : ''}`}
       >
         {article.imageUrl && !imageError ? (
           <img
@@ -62,9 +80,16 @@ export function NewsCard({ article }: NewsCardProps) {
             </p>
           )}
 
-          <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-sm font-medium">
-            <span>Leer más</span>
-            <ExternalLink className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-sm font-medium">
+              <span>Leer más</span>
+              <ExternalLink className="w-4 h-4" />
+            </div>
+            {!isOriginalLink && (
+              <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400" title="Enlace de búsqueda alternativo">
+                <AlertCircle className="w-3 h-3" />
+              </div>
+            )}
           </div>
         </div>
       </a>

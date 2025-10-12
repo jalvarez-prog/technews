@@ -1,5 +1,6 @@
-import { TrendingUp, Clock, ExternalLink } from 'lucide-react';
+import { TrendingUp, Clock, ExternalLink, AlertCircle } from 'lucide-react';
 import { NewsArticle } from '../types';
+import { getSafeArticleUrl, trackLinkClick, getDomainFromUrl, isValidUrl } from '../utils/linkUtils';
 
 interface TrendingNewsSectionProps {
   articles: NewsArticle[];
@@ -14,6 +15,11 @@ export function TrendingNewsSection({ articles, categoryColor }: TrendingNewsSec
     if (seconds < 3600) return `Hace ${Math.floor(seconds / 60)}m`;
     if (seconds < 86400) return `Hace ${Math.floor(seconds / 3600)}h`;
     return `Hace ${Math.floor(seconds / 86400)}d`;
+  };
+
+  const handleClick = (article: NewsArticle) => {
+    const articleUrl = getSafeArticleUrl(article.link, article.source, article.title);
+    trackLinkClick(article.id, article.title, article.source, articleUrl);
   };
 
   return (
@@ -31,14 +37,21 @@ export function TrendingNewsSection({ articles, categoryColor }: TrendingNewsSec
       </div>
 
       <div className="space-y-4">
-        {articles.slice(0, 5).map((article, index) => (
-          <a
-            key={article.id}
-            href={article.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
+        {articles.slice(0, 5).map((article, index) => {
+          const articleUrl = getSafeArticleUrl(article.link, article.source, article.title);
+          const isOriginalLink = isValidUrl(article.link);
+          const domain = getDomainFromUrl(articleUrl);
+          
+          return (
+            <a
+              key={article.id}
+              href={articleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              onClick={() => handleClick(article)}
+              title={`Leer artículo completo${domain ? ` en ${domain}` : ''}`}
+            >
             <div 
               className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold text-white"
               style={{ 
@@ -62,9 +75,15 @@ export function TrendingNewsSection({ articles, categoryColor }: TrendingNewsSec
               </div>
             </div>
 
-            <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex-shrink-0 mt-1" />
-          </a>
-        ))}
+              <div className="flex items-center gap-1 flex-shrink-0 mt-1">
+                <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+                {!isOriginalLink && (
+                  <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Enlace de búsqueda alternativo" />
+                )}
+              </div>
+            </a>
+          );
+        })}
       </div>
 
       {articles.length > 5 && (

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Clock, ExternalLink } from 'lucide-react';
+import { Clock, ExternalLink, AlertCircle } from 'lucide-react';
 import { NewsCategory } from '../types';
 import { useTicker } from '../hooks/useTicker';
+import { getSafeArticleUrl, trackLinkClick, isValidUrl } from '../utils/linkUtils';
 
 interface SlimNewsTickerProps {
   category: NewsCategory;
@@ -89,18 +90,25 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
 
         {/* Scrolling cards */}
         <div className="flex items-center gap-3 h-full pl-32 animate-scroll">
-          {duplicatedNews.map((news, index) => (
-            <a
-              key={`${news.id}-${index}`}
-              href={news.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-shrink-0 no-underline"
-              onClick={(e) => {
-                // Pausar animación brevemente al hacer clic
-                e.currentTarget.parentElement?.classList.add('hover:pause');
-              }}
-            >
+          {duplicatedNews.map((news, index) => {
+            const safeUrl = getSafeArticleUrl(news.link, news.source, news.title);
+            const isOriginalLink = isValidUrl(news.link);
+            
+            return (
+              <a
+                key={`${news.id}-${index}`}
+                href={safeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 no-underline"
+                onClick={(e) => {
+                  // Pausar animación brevemente al hacer clic
+                  e.currentTarget.parentElement?.classList.add('hover:pause');
+                  // Track link click
+                  trackLinkClick(news.id, news.title, news.source, safeUrl);
+                }}
+                title={`Leer noticia completa: ${news.title}`}
+              >
               <div className={`ticker-card h-12 bg-gray-50 dark:bg-gray-800/95 backdrop-blur-sm rounded-lg border ${getSeverityColor(news.severity)} overflow-hidden shadow-sm px-4 flex items-center gap-3 group`}>
                 {/* Icon & Severity */}
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -126,14 +134,18 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
                   <span className="whitespace-nowrap">{news.time}</span>
                 </div>
 
-                {/* Source with link indicator */}
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <span className="text-xs text-cyan-600 dark:text-cyan-400 font-medium whitespace-nowrap">{news.source}</span>
-                  <ExternalLink className="w-3 h-3 text-cyan-600 dark:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {/* Source with link indicator */}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <span className="text-xs text-cyan-600 dark:text-cyan-400 font-medium whitespace-nowrap">{news.source}</span>
+                    <ExternalLink className="w-3 h-3 text-cyan-600 dark:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {!isOriginalLink && (
+                      <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Enlace de búsqueda alternativo" />
+                    )}
+                  </div>
                 </div>
-              </div>
-            </a>
-          ))}
+              </a>
+            );
+          })}
         </div>
       </div>
     </div>

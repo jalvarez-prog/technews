@@ -50,7 +50,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "critical",
       source: "CyberScoop",
       time: "8h",
-      icon: "🔴"
+      icon: "🔴",
+      link: "https://cyberscoop.com"
     },
     {
       id: 5,
@@ -59,7 +60,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "Microsoft Security",
       time: "12h",
-      icon: "🔹"
+      icon: "🔹",
+      link: "https://msrc.microsoft.com/update-guide"
     },
     {
       id: 6,
@@ -68,7 +70,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "Krebs on Security",
       time: "16h",
-      icon: "⚠️"
+      icon: "⚠️",
+      link: "https://krebsonsecurity.com"
     }
   ],
   'ai': [
@@ -79,7 +82,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "OpenAI Blog",
       time: "2h",
-      icon: "🚀"
+      icon: "🚀",
+      link: "https://openai.com/blog"
     },
     {
       id: 2,
@@ -88,7 +92,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Nature",
       time: "4h",
-      icon: "🧠"
+      icon: "🧠",
+      link: "https://www.nature.com"
     },
     {
       id: 3,
@@ -97,7 +102,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "TechCrunch",
       time: "6h",
-      icon: "⚖️"
+      icon: "⚖️",
+      link: "https://techcrunch.com"
     },
     {
       id: 4,
@@ -106,7 +112,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "Meta AI",
       time: "8h",
-      icon: "🔥"
+      icon: "🔥",
+      link: "https://ai.meta.com"
     },
     {
       id: 5,
@@ -115,7 +122,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Reuters",
       time: "10h",
-      icon: "💰"
+      icon: "💰",
+      link: "https://www.reuters.com"
     },
     {
       id: 6,
@@ -124,7 +132,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "IEEE Spectrum",
       time: "14h",
-      icon: "🔬"
+      icon: "🔬",
+      link: "https://spectrum.ieee.org"
     }
   ],
   'finance-crypto': [
@@ -135,7 +144,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "CoinDesk",
       time: "30m",
-      icon: "₿"
+      icon: "₿",
+      link: "https://www.coindesk.com"
     },
     {
       id: 2,
@@ -144,7 +154,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Bloomberg",
       time: "2h",
-      icon: "📈"
+      icon: "📈",
+      link: "https://www.bloomberg.com"
     },
     {
       id: 3,
@@ -153,7 +164,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "critical",
       source: "The Block",
       time: "4h",
-      icon: "🔴"
+      icon: "🔴",
+      link: "https://www.theblock.co"
     },
     {
       id: 4,
@@ -162,7 +174,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Financial Times",
       time: "6h",
-      icon: "🏦"
+      icon: "🏦",
+      link: "https://www.ft.com"
     },
     {
       id: 5,
@@ -171,7 +184,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "Reuters",
       time: "8h",
-      icon: "⚖️"
+      icon: "⚖️",
+      link: "https://www.reuters.com"
     },
     {
       id: 6,
@@ -180,7 +194,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "L2Beat",
       time: "12h",
-      icon: "⚡"
+      icon: "⚡",
+      link: "https://l2beat.com"
     }
   ],
   'software-devops': [
@@ -191,7 +206,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "CNCF",
       time: "3h",
-      icon: "☸️"
+      icon: "☸️",
+      link: "https://www.cncf.io"
     },
     {
       id: 2,
@@ -200,7 +216,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "GitHub Blog",
       time: "5h",
-      icon: "🤖"
+      icon: "🤖",
+      link: "https://github.blog"
     },
     {
       id: 3,
@@ -209,7 +226,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "TIOBE",
       time: "7h",
-      icon: "🦀"
+      icon: "🦀",
+      link: "https://www.tiobe.com"
     },
     {
       id: 4,
@@ -218,7 +236,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "Docker Blog",
       time: "9h",
-      icon: "🐳"
+      icon: "🐳",
+      link: "https://www.docker.com/blog"
     },
     {
       id: 5,
@@ -227,7 +246,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "HashiCorp",
       time: "11h",
-      icon: "🔧"
+      icon: "🔧",
+      link: "https://www.hashicorp.com"
     },
     {
       id: 6,
@@ -236,7 +256,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "GitLab",
       time: "15h",
-      icon: "🔒"
+      icon: "🔒",
+      link: "https://about.gitlab.com"
     }
   ],
   'iot': [
@@ -247,7 +268,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "CSA",
       time: "2h",
-      icon: "🏠"
+      icon: "🏠",
+      link: "https://csa-iot.org"
     },
     {
       id: 2,
@@ -256,7 +278,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "IoT World",
       time: "4h",
-      icon: "🔋"
+      icon: "🔋",
+      link: "https://www.iot-world.com"
     },
     {
       id: 3,
@@ -265,7 +288,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "critical",
       source: "Ars Technica",
       time: "6h",
-      icon: "🚨"
+      icon: "🚨",
+      link: "https://arstechnica.com"
     },
     {
       id: 4,
@@ -274,7 +298,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "Amazon News",
       time: "8h",
-      icon: "📡"
+      icon: "📡",
+      link: "https://www.aboutamazon.com"
     },
     {
       id: 5,
@@ -283,7 +308,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "IEEE IoT",
       time: "10h",
-      icon: "⚡"
+      icon: "⚡",
+      link: "https://iot.ieee.org"
     },
     {
       id: 6,
@@ -292,7 +318,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "Light Reading",
       time: "14h",
-      icon: "📶"
+      icon: "📶",
+      link: "https://www.lightreading.com"
     }
   ],
   'cloud': [
@@ -303,7 +330,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "AWS Blog",
       time: "1h",
-      icon: "☁️"
+      icon: "☁️",
+      link: "https://aws.amazon.com/blogs"
     },
     {
       id: 2,
@@ -312,7 +340,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "critical",
       source: "The Register",
       time: "3h",
-      icon: "🔴"
+      icon: "🔴",
+      link: "https://www.theregister.com"
     },
     {
       id: 3,
@@ -321,7 +350,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Google Cloud",
       time: "5h",
-      icon: "💰"
+      icon: "💰",
+      link: "https://cloud.google.com/blog"
     },
     {
       id: 4,
@@ -330,7 +360,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Cloudflare Blog",
       time: "7h",
-      icon: "🌐"
+      icon: "🌐",
+      link: "https://blog.cloudflare.com"
     },
     {
       id: 5,
@@ -339,7 +370,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "Gartner",
       time: "9h",
-      icon: "📊"
+      icon: "📊",
+      link: "https://www.gartner.com"
     },
     {
       id: 6,
@@ -348,7 +380,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "FinOps Foundation",
       time: "13h",
-      icon: "📉"
+      icon: "📉",
+      link: "https://www.finops.org"
     }
   ],
   'data-science': [
@@ -359,7 +392,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "Databricks",
       time: "2h",
-      icon: "⚡"
+      icon: "⚡",
+      link: "https://databricks.com"
     },
     {
       id: 2,
@@ -368,7 +402,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "PyData",
       time: "4h",
-      icon: "🐼"
+      icon: "🐼",
+      link: "https://pydata.org"
     },
     {
       id: 3,
@@ -377,7 +412,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "TechCrunch",
       time: "6h",
-      icon: "❄️"
+      icon: "❄️",
+      link: "https://techcrunch.com"
     },
     {
       id: 4,
@@ -386,7 +422,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "VentureBeat",
       time: "8h",
-      icon: "📈"
+      icon: "📈",
+      link: "https://venturebeat.com"
     },
     {
       id: 5,
@@ -395,7 +432,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "dbt Blog",
       time: "10h",
-      icon: "🔄"
+      icon: "🔄",
+      link: "https://blog.getdbt.com"
     },
     {
       id: 6,
@@ -404,7 +442,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "DB-Engines",
       time: "14h",
-      icon: "🗃️"
+      icon: "🗃️",
+      link: "https://db-engines.com"
     }
   ],
   'quantum': [
@@ -415,7 +454,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "hot",
       source: "IBM Research",
       time: "3h",
-      icon: "⚛️"
+      icon: "⚛️",
+      link: "https://research.ibm.com"
     },
     {
       id: 2,
@@ -424,7 +464,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Nature",
       time: "5h",
-      icon: "🔬"
+      icon: "🔬",
+      link: "https://www.nature.com"
     },
     {
       id: 3,
@@ -433,7 +474,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "critical",
       source: "Quantum Computing Report",
       time: "7h",
-      icon: "🔓"
+      icon: "🔓",
+      link: "https://quantumcomputingreport.com"
     },
     {
       id: 4,
@@ -442,7 +484,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "medium",
       source: "Microsoft",
       time: "9h",
-      icon: "☁️"
+      icon: "☁️",
+      link: "https://www.microsoft.com"
     },
     {
       id: 5,
@@ -451,7 +494,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "trending",
       source: "Physics World",
       time: "11h",
-      icon: "✅"
+      icon: "✅",
+      link: "https://physicsworld.com"
     },
     {
       id: 6,
@@ -460,7 +504,8 @@ const tickerDataByCategory: Record<NewsCategory, TickerNewsItem[]> = {
       severity: "high",
       source: "South China Post",
       time: "15h",
-      icon: "💰"
+      icon: "💰",
+      link: "https://www.scmp.com"
     }
   ]
 };
