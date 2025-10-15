@@ -1,0 +1,53 @@
+{
+  "name": "Ticker Super Simple",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "trigger",
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Script para actualizar el ticker usando métodos de n8n\nconst SUPABASE_URL = 'https://ynyaakoeygdualrqqusj.supabase.co';\nconst API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU';\n\n// 1. Obtener noticias usando n8n helper\nconst newsResponse = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SUPABASE_URL}/rest/v1/news?order=pub_date.desc&limit=50`,\n  headers: {\n    'apikey': API_KEY,\n    'Authorization': `Bearer ${API_KEY}`\n  },\n  json: true\n});\n\n// 2. Filtrar y seleccionar\nconst weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);\nconst categoryCount = {};\nconst selectedIds = [];\n\nfor (const news of newsResponse) {\n  if (selectedIds.length >= 10) break;\n  \n  const pubDate = new Date(news.pub_date);\n  if (pubDate < weekAgo) continue;\n  \n  const cat = news.category;\n  categoryCount[cat] = (categoryCount[cat] || 0) + 1;\n  \n  if (categoryCount[cat] <= 2) {\n    selectedIds.push(news.id);\n  }\n}\n\n// 3. Limpiar ticker anterior\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `${SUPABASE_URL}/rest/v1/news?is_featured=eq.true`,\n  headers: {\n    'apikey': API_KEY,\n    'Authorization': `Bearer ${API_KEY}`,\n    'Content-Type': 'application/json'\n  },\n  body: { is_featured: false },\n  json: true\n});\n\n// 4. Actualizar nuevas noticias\nfor (const id of selectedIds) {\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `${SUPABASE_URL}/rest/v1/news?id=eq.${id}`,\n    headers: {\n      'apikey': API_KEY,\n      'Authorization': `Bearer ${API_KEY}`,\n      'Content-Type': 'application/json'\n    },\n    body: { is_featured: true },\n    json: true\n  });\n}\n\nreturn [{\n  json: {\n    success: true,\n    message: `Ticker actualizado con ${selectedIds.length} noticias`,\n    timestamp: new Date().toISOString(),\n    categories: Object.entries(categoryCount)\n  }\n}];"
+      },
+      "id": "update-ticker-all",
+      "name": "Update Ticker Complete",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300]
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [
+        [
+          {
+            "node": "Update Ticker Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1",
+  "id": "ticker-super-simple",
+  "meta": {
+    "instanceId": "n8n"
+  },
+  "tags": []
+}

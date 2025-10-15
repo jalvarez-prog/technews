@@ -1,0 +1,1155 @@
+{
+  "name": "RSS News Scraper Expanded",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "id": "trigger",
+      "name": "Every 12 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [100, 500]
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/TheHackersNews",
+        "options": {}
+      },
+      "id": "cyber1",
+      "name": "The Hacker News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 50]
+    },
+    {
+      "parameters": {
+        "url": "https://www.darkreading.com/rss.xml",
+        "options": {}
+      },
+      "id": "cyber2",
+      "name": "Dark Reading",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 130]
+    },
+    {
+      "parameters": {
+        "url": "https://krebsonsecurity.com/feed/",
+        "options": {}
+      },
+      "id": "cyber3",
+      "name": "Krebs on Security",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 210]
+    },
+    {
+      "parameters": {
+        "url": "https://www.bleepingcomputer.com/feed/",
+        "options": {}
+      },
+      "id": "cyber4",
+      "name": "Bleeping Computer",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 290]
+    },
+    {
+      "parameters": {
+        "url": "https://www.securityweek.com/feed/",
+        "options": {}
+      },
+      "id": "cyber5",
+      "name": "SecurityWeek",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 370]
+    },
+    {
+      "parameters": {
+        "url": "https://www.artificialintelligence-news.com/feed/",
+        "options": {}
+      },
+      "id": "ai1",
+      "name": "AI News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 470]
+    },
+    {
+      "parameters": {
+        "url": "https://venturebeat.com/ai/feed/",
+        "options": {}
+      },
+      "id": "ai2",
+      "name": "VentureBeat AI",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 550]
+    },
+    {
+      "parameters": {
+        "url": "https://www.marktechpost.com/feed/",
+        "options": {}
+      },
+      "id": "ai3",
+      "name": "MarkTechPost",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 630]
+    },
+    {
+      "parameters": {
+        "url": "https://openai.com/blog/rss.xml",
+        "options": {}
+      },
+      "id": "ai4",
+      "name": "OpenAI Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 710]
+    },
+    {
+      "parameters": {
+        "url": "https://deepmind.com/blog/feed/basic/",
+        "options": {}
+      },
+      "id": "ai5",
+      "name": "DeepMind Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [300, 790]
+    },
+    {
+      "parameters": {
+        "url": "https://cointelegraph.com/rss",
+        "options": {}
+      },
+      "id": "crypto1",
+      "name": "CoinTelegraph",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 50]
+    },
+    {
+      "parameters": {
+        "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+        "options": {}
+      },
+      "id": "crypto2",
+      "name": "CoinDesk",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 130]
+    },
+    {
+      "parameters": {
+        "url": "https://cryptonews.com/news/feed/",
+        "options": {}
+      },
+      "id": "crypto3",
+      "name": "CryptoNews",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 210]
+    },
+    {
+      "parameters": {
+        "url": "https://bitcoinmagazine.com/.rss/full/",
+        "options": {}
+      },
+      "id": "crypto4",
+      "name": "Bitcoin Magazine",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 290]
+    },
+    {
+      "parameters": {
+        "url": "https://decrypt.co/feed",
+        "options": {}
+      },
+      "id": "crypto5",
+      "name": "Decrypt",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 370]
+    },
+    {
+      "parameters": {
+        "url": "https://devops.com/feed/",
+        "options": {}
+      },
+      "id": "devops1",
+      "name": "DevOps.com",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 470]
+    },
+    {
+      "parameters": {
+        "url": "https://thenewstack.io/feed/",
+        "options": {}
+      },
+      "id": "devops2",
+      "name": "The New Stack",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 550]
+    },
+    {
+      "parameters": {
+        "url": "https://dzone.com/services/widget/header-feed/list",
+        "options": {}
+      },
+      "id": "devops3",
+      "name": "DZone DevOps",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 630]
+    },
+    {
+      "parameters": {
+        "url": "https://www.infoq.com/feed/",
+        "options": {}
+      },
+      "id": "devops4",
+      "name": "InfoQ",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 710]
+    },
+    {
+      "parameters": {
+        "url": "https://stackify.com/feed/",
+        "options": {}
+      },
+      "id": "devops5",
+      "name": "Stackify",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [500, 790]
+    },
+    {
+      "parameters": {
+        "url": "https://iot.eetimes.com/feed/",
+        "options": {}
+      },
+      "id": "iot1",
+      "name": "IoT EE Times",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 50]
+    },
+    {
+      "parameters": {
+        "url": "https://www.iotforall.com/feed",
+        "options": {}
+      },
+      "id": "iot2",
+      "name": "IoT For All",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 130]
+    },
+    {
+      "parameters": {
+        "url": "https://www.iotevolutionworld.com/home/feed/all.rss",
+        "options": {}
+      },
+      "id": "iot3",
+      "name": "IoT Evolution",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 210]
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/iotworldtoday",
+        "options": {}
+      },
+      "id": "iot4",
+      "name": "IoT World Today",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 290]
+    },
+    {
+      "parameters": {
+        "url": "https://staceyoniot.com/feed/",
+        "options": {}
+      },
+      "id": "iot5",
+      "name": "Stacey on IoT",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 370]
+    },
+    {
+      "parameters": {
+        "url": "https://cloudcomputing-news.net/feed/",
+        "options": {}
+      },
+      "id": "cloud1",
+      "name": "Cloud Computing News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 470]
+    },
+    {
+      "parameters": {
+        "url": "https://cloud.google.com/feeds/kubernetes-release-notes.xml",
+        "options": {}
+      },
+      "id": "cloud2",
+      "name": "Google Cloud Updates",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 550]
+    },
+    {
+      "parameters": {
+        "url": "https://aws.amazon.com/blogs/aws/feed/",
+        "options": {}
+      },
+      "id": "cloud3",
+      "name": "AWS Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 630]
+    },
+    {
+      "parameters": {
+        "url": "https://azure.microsoft.com/en-us/blog/feed/",
+        "options": {}
+      },
+      "id": "cloud4",
+      "name": "Azure Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 710]
+    },
+    {
+      "parameters": {
+        "url": "https://www.ibm.com/blogs/cloud-computing/feed/",
+        "options": {}
+      },
+      "id": "cloud5",
+      "name": "IBM Cloud Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [700, 790]
+    },
+    {
+      "parameters": {
+        "url": "https://www.kdnuggets.com/feed",
+        "options": {}
+      },
+      "id": "ds1",
+      "name": "KDnuggets",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 50]
+    },
+    {
+      "parameters": {
+        "url": "https://towardsdatascience.com/feed",
+        "options": {}
+      },
+      "id": "ds2",
+      "name": "Towards Data Science",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 130]
+    },
+    {
+      "parameters": {
+        "url": "https://www.datasciencecentral.com/feed/",
+        "options": {}
+      },
+      "id": "ds3",
+      "name": "Data Science Central",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 210]
+    },
+    {
+      "parameters": {
+        "url": "https://www.analyticsvidhya.com/blog/feed/",
+        "options": {}
+      },
+      "id": "ds4",
+      "name": "Analytics Vidhya",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 290]
+    },
+    {
+      "parameters": {
+        "url": "https://machinelearningmastery.com/blog/feed/",
+        "options": {}
+      },
+      "id": "ds5",
+      "name": "ML Mastery",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 370]
+    },
+    {
+      "parameters": {
+        "url": "https://thequantuminsider.com/feed/",
+        "options": {}
+      },
+      "id": "quantum1",
+      "name": "The Quantum Insider",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 470]
+    },
+    {
+      "parameters": {
+        "url": "https://quantumcomputingreport.com/feed/",
+        "options": {}
+      },
+      "id": "quantum2",
+      "name": "Quantum Computing Report",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 550]
+    },
+    {
+      "parameters": {
+        "url": "https://www.quantumdaily.com/feed/",
+        "options": {}
+      },
+      "id": "quantum3",
+      "name": "Quantum Daily",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 630]
+    },
+    {
+      "parameters": {
+        "url": "https://phys.org/rss-feed/physics-news/quantum-physics/",
+        "options": {}
+      },
+      "id": "quantum4",
+      "name": "Phys.org Quantum",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 710]
+    },
+    {
+      "parameters": {
+        "url": "https://www.nature.com/nphys.rss",
+        "options": {}
+      },
+      "id": "quantum5",
+      "name": "Nature Physics",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [900, 790]
+    },
+    {
+      "parameters": {
+        "mode": "multiplex",
+        "options": {}
+      },
+      "id": "merge-all",
+      "name": "Merge All Feeds",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [1100, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar y categorizar noticias\nconst items = [];\nconst seenLinks = new Set();\n\nfor (const item of $input.all()) {\n  const news = item.json;\n  \n  // Evitar duplicados\n  if (seenLinks.has(news.link)) continue;\n  seenLinks.add(news.link);\n  \n  // Determinar categoría basada en la fuente\n  let category = 'ai'; // default\n  const source = item.node || '';\n  \n  // Mapeo de fuentes a categorías\n  if (source.includes('cyber') || source.includes('Hacker') || source.includes('Security') || \n      source.includes('Bleeping') || source.includes('Krebs')) {\n    category = 'cybersecurity';\n  } else if (source.includes('ai') || source.includes('AI') || source.includes('OpenAI') || \n             source.includes('DeepMind') || source.includes('MarkTech')) {\n    category = 'ai';\n  } else if (source.includes('crypto') || source.includes('Coin') || source.includes('Bitcoin') || \n             source.includes('Decrypt')) {\n    category = 'finance-crypto';\n  } else if (source.includes('devops') || source.includes('Stack') || source.includes('InfoQ') || \n             source.includes('DZone')) {\n    category = 'software-devops';\n  } else if (source.includes('iot') || source.includes('IoT')) {\n    category = 'iot';\n  } else if (source.includes('cloud') || source.includes('AWS') || source.includes('Azure') || \n             source.includes('Google Cloud')) {\n    category = 'cloud';\n  } else if (source.includes('ds') || source.includes('Data') || source.includes('KDnuggets') || \n             source.includes('ML')) {\n    category = 'data-science';\n  } else if (source.includes('quantum') || source.includes('Quantum')) {\n    category = 'quantum';\n  }\n  \n  // Análisis adicional del título\n  const title = (news.title || '').toLowerCase();\n  if (title.includes('hack') || title.includes('breach') || title.includes('vulnerab')) {\n    category = 'cybersecurity';\n  } else if (title.includes('bitcoin') || title.includes('crypto') || title.includes('ethereum')) {\n    category = 'finance-crypto';\n  } else if (title.includes('quantum')) {\n    category = 'quantum';\n  }\n  \n  // Determinar severity\n  let severity = 'medium';\n  if (title.includes('critical') || title.includes('breach') || title.includes('emergency')) {\n    severity = 'critical';\n  } else if (title.includes('breaking') || title.includes('just in') || title.includes('alert')) {\n    severity = 'hot';\n  } else if (title.includes('major') || title.includes('important')) {\n    severity = 'high';\n  } else if (title.includes('trending') || title.includes('viral')) {\n    severity = 'trending';\n  }\n  \n  // Solo procesar si tiene datos válidos\n  if (news.title && news.link && news.pubDate) {\n    items.push({\n      json: {\n        title: news.title.substring(0, 500),\n        description: (news.contentSnippet || news.description || news.content || 'Sin descripción').substring(0, 2000),\n        link: news.link,\n        pub_date: news.pubDate,\n        source: news.creator || item.node || 'RSS Feed',\n        category: category,\n        severity: severity,\n        is_featured: severity === 'critical' || severity === 'hot',\n        image_url: news.enclosure?.url || null,\n        tags: []\n      }\n    });\n  }\n}\n\nconsole.log(`Processed ${items.length} unique news items`);\nreturn items;"
+      },
+      "id": "process",
+      "name": "Process & Categorize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1300, 400]
+    },
+    {
+      "parameters": {
+        "batchSize": 25,
+        "options": {}
+      },
+      "id": "batch",
+      "name": "Batch Insert",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [1500, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ynyaakoeygdualrqqusj.supabase.co/rest/v1/news",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($input.all().map(item => item.json)) }}",
+        "options": {}
+      },
+      "id": "insert",
+      "name": "Insert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1700, 400],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "## RSS Scraper Expandido\n\n**40 fuentes RSS** (5 por categoría):\n- Cybersecurity\n- AI\n- Finance/Crypto  \n- Software/DevOps\n- IoT\n- Cloud\n- Data Science\n- Quantum\n\nEjecuta cada 12 horas\nInserta en lotes de 25",
+        "height": 250,
+        "width": 200
+      },
+      "id": "note",
+      "name": "Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [50, 50]
+    }
+  ],
+  "connections": {
+    "Every 12 hours": {
+      "main": [
+        [
+          {
+            "node": "The Hacker News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dark Reading",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Krebs on Security",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Bleeping Computer",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SecurityWeek",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "VentureBeat AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MarkTechPost",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "OpenAI Blog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DeepMind Blog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CoinTelegraph",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CoinDesk",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CryptoNews",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Bitcoin Magazine",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Decrypt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DevOps.com",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "The New Stack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DZone DevOps",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "InfoQ",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Stackify",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IoT EE Times",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IoT For All",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IoT Evolution",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IoT World Today",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Stacey on IoT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Cloud Computing News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Cloud Updates",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AWS Blog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Azure Blog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IBM Cloud Blog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "KDnuggets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Towards Data Science",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Data Science Central",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analytics Vidhya",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ML Mastery",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "The Quantum Insider",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Quantum Computing Report",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Quantum Daily",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Phys.org Quantum",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Nature Physics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "The Hacker News": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 0
+        }]
+      ]
+    },
+    "Dark Reading": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 1
+        }]
+      ]
+    },
+    "Krebs on Security": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 2
+        }]
+      ]
+    },
+    "Bleeping Computer": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 3
+        }]
+      ]
+    },
+    "SecurityWeek": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 4
+        }]
+      ]
+    },
+    "AI News": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 5
+        }]
+      ]
+    },
+    "VentureBeat AI": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 6
+        }]
+      ]
+    },
+    "MarkTechPost": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 7
+        }]
+      ]
+    },
+    "OpenAI Blog": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 8
+        }]
+      ]
+    },
+    "DeepMind Blog": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 9
+        }]
+      ]
+    },
+    "CoinTelegraph": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 10
+        }]
+      ]
+    },
+    "CoinDesk": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 11
+        }]
+      ]
+    },
+    "CryptoNews": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 12
+        }]
+      ]
+    },
+    "Bitcoin Magazine": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 13
+        }]
+      ]
+    },
+    "Decrypt": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 14
+        }]
+      ]
+    },
+    "DevOps.com": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 15
+        }]
+      ]
+    },
+    "The New Stack": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 16
+        }]
+      ]
+    },
+    "DZone DevOps": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 17
+        }]
+      ]
+    },
+    "InfoQ": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 18
+        }]
+      ]
+    },
+    "Stackify": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 19
+        }]
+      ]
+    },
+    "IoT EE Times": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 20
+        }]
+      ]
+    },
+    "IoT For All": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 21
+        }]
+      ]
+    },
+    "IoT Evolution": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 22
+        }]
+      ]
+    },
+    "IoT World Today": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 23
+        }]
+      ]
+    },
+    "Stacey on IoT": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 24
+        }]
+      ]
+    },
+    "Cloud Computing News": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 25
+        }]
+      ]
+    },
+    "Google Cloud Updates": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 26
+        }]
+      ]
+    },
+    "AWS Blog": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 27
+        }]
+      ]
+    },
+    "Azure Blog": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 28
+        }]
+      ]
+    },
+    "IBM Cloud Blog": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 29
+        }]
+      ]
+    },
+    "KDnuggets": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 30
+        }]
+      ]
+    },
+    "Towards Data Science": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 31
+        }]
+      ]
+    },
+    "Data Science Central": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 32
+        }]
+      ]
+    },
+    "Analytics Vidhya": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 33
+        }]
+      ]
+    },
+    "ML Mastery": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 34
+        }]
+      ]
+    },
+    "The Quantum Insider": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 35
+        }]
+      ]
+    },
+    "Quantum Computing Report": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 36
+        }]
+      ]
+    },
+    "Quantum Daily": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 37
+        }]
+      ]
+    },
+    "Phys.org Quantum": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 38
+        }]
+      ]
+    },
+    "Nature Physics": {
+      "main": [
+        [{
+          "node": "Merge All Feeds",
+          "type": "main",
+          "index": 39
+        }]
+      ]
+    },
+    "Merge All Feeds": {
+      "main": [
+        [{
+          "node": "Process & Categorize",
+          "type": "main",
+          "index": 0
+        }]
+      ]
+    },
+    "Process & Categorize": {
+      "main": [
+        [{
+          "node": "Batch Insert",
+          "type": "main",
+          "index": 0
+        }]
+      ]
+    },
+    "Batch Insert": {
+      "main": [
+        [{
+          "node": "Insert to Supabase",
+          "type": "main",
+          "index": 0
+        }]
+      ]
+    },
+    "Insert to Supabase": {
+      "main": [
+        [{
+          "node": "Batch Insert",
+          "type": "main",
+          "index": 0
+        }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1",
+  "id": "rss-scraper-expanded",
+  "meta": {
+    "instanceId": "n8n"
+  },
+  "tags": []
+}

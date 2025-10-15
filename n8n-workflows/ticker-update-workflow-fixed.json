@@ -1,0 +1,251 @@
+{
+  "name": "Ticker Update - 4h Fixed",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "cron-4-hours",
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": "public",
+        "table": "news",
+        "returnAll": false,
+        "limit": 50,
+        "options": {}
+      },
+      "id": "get-recent-news",
+      "name": "Get Recent News",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Filtrar noticias de las últimas 24 horas y calcular score\nconst items = [];\nconst now = new Date();\nconst twentyFourHoursAgo = new Date(now - 24 * 60 * 60 * 1000);\n\nfor (const item of $input.all()) {\n  const news = item.json;\n  const pubDate = new Date(news.pub_date);\n  \n  // Solo procesar noticias de las últimas 24 horas\n  if (pubDate > twentyFourHoursAgo) {\n    const hoursAgo = (now - pubDate) / (1000 * 60 * 60);\n    \n    // Calcular score\n    let score = 0;\n    score += (news.view_count || 0) * 10;\n    \n    // Bonus por severity\n    switch (news.severity) {\n      case 'critical': score += 100; break;\n      case 'hot': score += 80; break;\n      case 'high': score += 60; break;\n      case 'trending': score += 50; break;\n      default: score += 30;\n    }\n    \n    // Penalización por antigüedad\n    score -= hoursAgo * 2;\n    \n    items.push({\n      json: {\n        ...news,\n        score: Math.max(0, score),\n        hours_ago: hoursAgo\n      }\n    });\n  }\n}\n\n// Ordenar por score y tomar los top 20\nitems.sort((a, b) => b.json.score - a.json.score);\nreturn items.slice(0, 20);"
+      },
+      "id": "calculate-scores",
+      "name": "Calculate Scores",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Seleccionar noticias para el ticker con diversidad de categorías\nconst selectedNews = [];\nconst categoryCount = {};\nconst maxPerCategory = 3;\n\nfor (const item of $input.all()) {\n  const news = item.json;\n  const category = news.category;\n  \n  if (!categoryCount[category]) {\n    categoryCount[category] = 0;\n  }\n  \n  // Solo agregar si no excedemos el límite por categoría\n  if (categoryCount[category] < maxPerCategory && selectedNews.length < 15) {\n    // Determinar si debe ir al ticker\n    const shouldFeature = news.score > 50 || \n                         news.severity === 'critical' || \n                         news.severity === 'hot';\n    \n    if (shouldFeature) {\n      selectedNews.push({\n        json: {\n          id: news.id,\n          is_featured: true,\n          severity: news.severity === 'medium' && news.score > 80 ? 'trending' : news.severity\n        }\n      });\n      categoryCount[category]++;\n    }\n  }\n}\n\nreturn selectedNews;"
+      },
+      "id": "select-for-ticker",
+      "name": "Select for Ticker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": "public",
+        "table": "news",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_featured": "={{ false }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "is_featured",
+              "displayName": "is_featured",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "filters": {
+          "conditions": [
+            {
+              "field": "is_featured",
+              "type": "boolean",
+              "operation": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "clear-old-featured",
+      "name": "Clear Old Featured",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1050, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": "public",
+        "table": "news",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "is_featured": "={{ $json.is_featured }}",
+            "severity": "={{ $json.severity }}"
+          },
+          "matchingColumns": ["id"],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "uuid",
+              "canBeUsedToMatch": true,
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_featured",
+              "displayName": "is_featured",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-featured",
+      "name": "Update Featured",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1250, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ticker Update Workflow (Fixed)\n\nEste workflow:\n1. Obtiene las últimas 50 noticias\n2. Filtra las de las últimas 24h\n3. Calcula scores basados en:\n   - Vistas (×10 puntos)\n   - Severidad (+30 a +100 puntos)\n   - Antigüedad (-2 puntos/hora)\n4. Selecciona top 15 con diversidad\n5. Actualiza is_featured en la BD\n\n### Cambios respecto al original:\n- Usa operaciones básicas de Supabase\n- No usa queries SQL complejas\n- Procesamiento en JavaScript",
+        "height": 280,
+        "width": 320
+      },
+      "id": "workflow-info",
+      "name": "Workflow Info",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [100, 50]
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [
+        [
+          {
+            "node": "Get Recent News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent News": {
+      "main": [
+        [
+          {
+            "node": "Calculate Scores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Scores": {
+      "main": [
+        [
+          {
+            "node": "Select for Ticker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select for Ticker": {
+      "main": [
+        [
+          {
+            "node": "Clear Old Featured",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Old Featured": {
+      "main": [
+        [
+          {
+            "node": "Update Featured",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1",
+  "id": "ticker-update-4h-fixed",
+  "meta": {
+    "instanceId": "n8n"
+  },
+  "tags": []
+}

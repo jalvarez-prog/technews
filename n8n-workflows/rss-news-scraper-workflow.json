@@ -1,0 +1,313 @@
+{
+  "name": "RSS News Scraper - 12h",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Every 12 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.securityweek.com/feed/",
+        "options": {}
+      },
+      "id": "rss-cybersecurity",
+      "name": "RSS Cybersecurity",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [450, 100],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.feedburner.com/TheHackersNews",
+        "options": {}
+      },
+      "id": "rss-hackers-news",
+      "name": "The Hacker News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [650, 50]
+    },
+    {
+      "parameters": {
+        "url": "https://www.darkreading.com/rss.xml",
+        "options": {}
+      },
+      "id": "rss-dark-reading",
+      "name": "Dark Reading",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [650, 150]
+    },
+    {
+      "parameters": {
+        "url": "https://www.artificialintelligence-news.com/feed/",
+        "options": {}
+      },
+      "id": "rss-ai-news",
+      "name": "AI News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [650, 250]
+    },
+    {
+      "parameters": {
+        "url": "https://syncedreview.com/feed/",
+        "options": {}
+      },
+      "id": "rss-synced-review",
+      "name": "Synced Review AI",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [650, 350]
+    },
+    {
+      "parameters": {
+        "url": "https://cointelegraph.com/rss",
+        "options": {}
+      },
+      "id": "rss-cointelegraph",
+      "name": "CoinTelegraph",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [650, 450]
+    },
+    {
+      "parameters": {
+        "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+        "options": {}
+      },
+      "id": "rss-coindesk",
+      "name": "CoinDesk",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [650, 550]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "link",
+              "field2": "link"
+            }
+          ]
+        },
+        "joinMode": "keepMatches",
+        "outputDataFrom": "both"
+      },
+      "id": "merge-all-feeds",
+      "name": "Merge All Feeds",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Mapear y limpiar datos de RSS\nconst items = [];\n\nfor (const item of $input.all()) {\n  const category = (() => {\n    const source = item.json.source || '';\n    const title = item.json.title || '';\n    const link = item.json.link || '';\n    \n    // Determinar categoría basada en la fuente o contenido\n    if (link.includes('hackernews') || link.includes('darkreading') || \n        title.toLowerCase().includes('security') || title.toLowerCase().includes('breach')) {\n      return 'cybersecurity';\n    } else if (link.includes('artificialintelligence') || link.includes('syncedreview') ||\n               title.toLowerCase().includes('ai ') || title.toLowerCase().includes('artificial')) {\n      return 'ai';\n    } else if (link.includes('cointelegraph') || link.includes('coindesk') ||\n               title.toLowerCase().includes('crypto') || title.toLowerCase().includes('bitcoin')) {\n      return 'finance-crypto';\n    }\n    return 'ai'; // default\n  })();\n  \n  // Determinar severity\n  const severity = (() => {\n    const titleLower = (item.json.title || '').toLowerCase();\n    if (titleLower.includes('critical') || titleLower.includes('breach') || \n        titleLower.includes('vulnerability')) {\n      return 'critical';\n    } else if (titleLower.includes('urgent') || titleLower.includes('high')) {\n      return 'high';\n    } else if (titleLower.includes('hot') || titleLower.includes('breaking')) {\n      return 'hot';\n    } else if (titleLower.includes('trending')) {\n      return 'trending';\n    }\n    return 'medium';\n  })();\n  \n  // Extraer tags del título\n  const tags = [];\n  const titleWords = (item.json.title || '').toLowerCase().split(' ');\n  const importantWords = ['ai', 'security', 'crypto', 'bitcoin', 'hack', 'vulnerability', \n                          'blockchain', 'machine learning', 'deep learning'];\n  \n  for (const word of titleWords) {\n    if (importantWords.includes(word)) {\n      tags.push(word);\n    }\n  }\n  \n  items.push({\n    json: {\n      title: item.json.title || 'Sin título',\n      description: item.json.contentSnippet || item.json.content || 'Sin descripción',\n      link: item.json.link || '',\n      pub_date: item.json.pubDate || new Date().toISOString(),\n      source: item.json.creator || item.json.source || 'Unknown',\n      category: category,\n      image_url: item.json.enclosure?.url || null,\n      content: item.json.content || null,\n      is_featured: severity === 'critical' || severity === 'hot',\n      severity: severity,\n      tags: tags\n    }\n  });\n}\n\nreturn items;"
+      },
+      "id": "process-news-data",
+      "name": "Process News Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ynyaakoeygdualrqqusj.supabase.co/rest/v1/news",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify([$json]) }}",
+        "options": {}
+      },
+      "id": "insert-to-supabase",
+      "name": "Insert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1250, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "## RSS News Scraper Workflow\n\nEste workflow:\n1. Se ejecuta cada 12 horas\n2. Lee múltiples fuentes RSS\n3. Procesa y categoriza las noticias\n4. Las inserta en Supabase evitando duplicados\n\n### Configuración requerida:\n- Credenciales de Supabase\n- URLs de RSS actualizadas",
+        "height": 200,
+        "width": 300
+      },
+      "id": "sticky-note",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [100, 100]
+    }
+  ],
+  "connections": {
+    "Every 12 hours": {
+      "main": [
+        [
+          {
+            "node": "The Hacker News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dark Reading",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Synced Review AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CoinTelegraph",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CoinDesk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "The Hacker News": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dark Reading": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AI News": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Synced Review AI": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "CoinTelegraph": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CoinDesk": {
+      "main": [
+        [
+          {
+            "node": "Merge All Feeds",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Feeds": {
+      "main": [
+        [
+          {
+            "node": "Process News Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process News Data": {
+      "main": [
+        [
+          {
+            "node": "Insert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1",
+  "id": "rss-news-scraper-12h",
+  "meta": {
+    "instanceId": "n8n"
+  },
+  "tags": []
+}

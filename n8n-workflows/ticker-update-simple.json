@@ -1,0 +1,239 @@
+{
+  "name": "Ticker Update Simple",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "trigger",
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://ynyaakoeygdualrqqusj.supabase.co/rest/v1/news",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "select",
+              "value": "*"
+            },
+            {
+              "name": "limit",
+              "value": "50"
+            },
+            {
+              "name": "order",
+              "value": "pub_date.desc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-news",
+      "name": "Get Recent News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+      "functionCode": "// Filtrar y procesar noticias para el ticker\nconst items = [];\nconst now = new Date();\nconst weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000); // Buscar en los últimos 7 días\n\n// Categorías y contadores\nconst categoryCount = {};\nconst maxPerCategory = 2;\nlet totalSelected = 0;\n\n// Asegurarse de que tenemos datos\nconst newsData = $input.all();\n\nfor (const item of newsData) {\n  const news = item.json;\n  const pubDate = new Date(news.pub_date);\n  \n  // Solo noticias de los últimos 7 días\n  if (pubDate > weekAgo && totalSelected < 10) {\n    const category = news.category;\n    \n    if (!categoryCount[category]) {\n      categoryCount[category] = 0;\n    }\n    \n    // Verificar límite por categoría\n    if (categoryCount[category] < maxPerCategory) {\n      // Determinar si es importante\n      const isImportant = news.severity === 'critical' || \n                         news.severity === 'hot' ||\n                         news.severity === 'high';\n      \n      if (isImportant || totalSelected < 5) {\n        items.push({\n          json: {\n            id: news.id,\n            is_featured: true\n          }\n        });\n        categoryCount[category]++;\n        totalSelected++;\n      }\n    }\n  }\n}\n\n// n8n espera un array de objetos con la propiedad 'json'\nreturn items;"
+      },
+      "id": "process",
+      "name": "Select for Ticker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://ynyaakoeygdualrqqusj.supabase.co/rest/v1/news",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "is_featured",
+              "value": "eq.true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "is_featured",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "clear-featured",
+      "name": "Clear Old Featured",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://ynyaakoeygdualrqqusj.supabase.co/rest/v1/news",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueWFha29leWdkdWFscnFxdXNqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTkwNzM2OSwiZXhwIjoyMDc1NDgzMzY5fQ.BbktikW20ds80aOQmQydd1fxGJXRat3HjNkfhAREkpU"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=in.({{ $input.all().map(item => item.json.id).join(',') }})"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "is_featured",
+              "value": "={{ true }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-ticker",
+      "name": "Update Ticker",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "content": "## Ticker Update Simple\n\nEste workflow usa HTTP Request directo:\n1. Obtiene las últimas 50 noticias\n2. Selecciona las más importantes (máx 10)\n3. Limpia el ticker anterior\n4. Marca las nuevas como featured\n\n⚠️ IMPORTANTE:\n- Las API keys están hardcodeadas\n- Máximo 2 noticias por categoría\n- Solo noticias de las últimas 24h",
+        "height": 200,
+        "width": 300
+      },
+      "id": "notes",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [100, 150]
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [
+        [
+          {
+            "node": "Get Recent News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent News": {
+      "main": [
+        [
+          {
+            "node": "Select for Ticker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select for Ticker": {
+      "main": [
+        [
+          {
+            "node": "Clear Old Featured",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Old Featured": {
+      "main": [
+        [
+          {
+            "node": "Update Ticker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1",
+  "id": "ticker-simple",
+  "meta": {
+    "instanceId": "n8n"
+  },
+  "tags": []
+}

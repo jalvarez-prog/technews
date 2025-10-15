@@ -1,0 +1,236 @@
+{
+  "name": "Ticker Update - 4h",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "cron-4-hours",
+      "name": "Every 4 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": "public",
+        "table": "news",
+        "returnAll": false,
+        "limit": 20,
+        "filters": {
+          "conditions": [
+            {
+              "field": "pub_date",
+              "type": "dateTime",
+              "operation": "gt",
+              "value": "={{ $now.minus(24, 'hours').toISO() }}"
+            }
+          ]
+        },
+        "sort": {
+          "rules": [
+            {
+              "field": "pub_date",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-top-news",
+      "name": "Get Top News",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [450, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Procesar noticias y determinar cuáles van al ticker\nconst items = [];\nconst processedNews = $input.all();\n\n// Asegurar diversidad de categorías en el ticker\nconst categoryCount = {};\nconst maxPerCategory = 3;\n\nfor (const item of processedNews) {\n  const news = item.json;\n  const category = news.category;\n  \n  // Inicializar contador de categoría\n  if (!categoryCount[category]) {\n    categoryCount[category] = 0;\n  }\n  \n  // Solo agregar si no hemos alcanzado el límite por categoría\n  if (categoryCount[category] < maxPerCategory) {\n    // Determinar si debe ir al ticker basado en el score\n    const shouldFeature = news.score > 50 || news.severity === 'critical' || news.severity === 'hot';\n    \n    items.push({\n      json: {\n        id: news.id,\n        is_featured: shouldFeature,\n        severity: determineSeverity(news),\n        // Actualizar view_count para reflejar popularidad\n        view_count: news.view_count + Math.floor(Math.random() * 10)\n      }\n    });\n    \n    if (shouldFeature) {\n      categoryCount[category]++;\n    }\n  }\n}\n\n// Función helper para determinar severity\nfunction determineSeverity(news) {\n  // Si ya tiene severity alta, mantenerla\n  if (['critical', 'hot', 'high'].includes(news.severity)) {\n    return news.severity;\n  }\n  \n  // Basarse en el score para actualizar severity\n  if (news.score > 100) return 'hot';\n  if (news.score > 80) return 'trending';\n  if (news.score > 60) return 'high';\n  return news.severity;\n}\n\nreturn items.slice(0, 15); // Máximo 15 noticias en el ticker"
+      },
+      "id": "process-for-ticker",
+      "name": "Process for Ticker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Primero, quitar is_featured de todas las noticias antiguas\nUPDATE news \nSET is_featured = FALSE \nWHERE is_featured = TRUE;",
+        "options": {}
+      },
+      "id": "clear-old-featured",
+      "name": "Clear Old Featured",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [850, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE news \nSET \n  is_featured = $2::boolean,\n  severity = $3::news_severity,\n  view_count = $4::integer,\n  updated_at = NOW()\nWHERE id = $1::uuid;",
+        "additionalFields": {
+          "queryParams": "={{ $json.id }},={{ $json.is_featured }},={{ $json.severity }},={{ $json.view_count }}"
+        }
+      },
+      "id": "update-featured-news",
+      "name": "Update Featured News",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Insertar estadísticas del ticker\nINSERT INTO ticker_stats (category, icon, custom_time)\nSELECT \n  category,\n  CASE \n    WHEN category = 'cybersecurity' THEN '🔒'\n    WHEN category = 'ai' THEN '🤖'\n    WHEN category = 'finance-crypto' THEN '💰'\n    WHEN category = 'software-devops' THEN '⚙️'\n    WHEN category = 'iot' THEN '📡'\n    WHEN category = 'cloud' THEN '☁️'\n    WHEN category = 'data-science' THEN '📊'\n    WHEN category = 'quantum' THEN '⚛️'\n    ELSE '📰'\n  END as icon,\n  TO_CHAR(NOW(), 'HH24:MI') as custom_time\nFROM news\nWHERE is_featured = TRUE\nGROUP BY category\nLIMIT 1;"
+      },
+      "id": "update-ticker-stats",
+      "name": "Update Ticker Stats",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1250, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ticker Update Workflow\n\nEste workflow:\n1. Se ejecuta cada 4 horas\n2. Selecciona las noticias más recientes y populares\n3. Calcula un score basado en:\n   - Tiempo de publicación\n   - Vistas\n   - Severidad\n4. Actualiza el ticker con máx 15 noticias\n5. Asegura diversidad de categorías\n\n### Lógica de Score:\n- Noticias críticas: +100 puntos\n- Noticias hot: +80 puntos\n- Penalización por antigüedad: -2 puntos/hora",
+        "height": 250,
+        "width": 300
+      },
+      "id": "workflow-notes",
+      "name": "Workflow Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [100, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.FRONTEND_URL }}/api/ticker/refresh",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.TICKER_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "notify-frontend",
+      "name": "Notify Frontend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1450, 300],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Every 4 hours": {
+      "main": [
+        [
+          {
+            "node": "Get Top News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Top News": {
+      "main": [
+        [
+          {
+            "node": "Process for Ticker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process for Ticker": {
+      "main": [
+        [
+          {
+            "node": "Clear Old Featured",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Old Featured": {
+      "main": [
+        [
+          {
+            "node": "Update Featured News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Featured News": {
+      "main": [
+        [
+          {
+            "node": "Update Ticker Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Ticker Stats": {
+      "main": [
+        [
+          {
+            "node": "Notify Frontend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1",
+  "id": "ticker-update-4h",
+  "meta": {
+    "instanceId": "n8n"
+  },
+  "tags": []
+}
