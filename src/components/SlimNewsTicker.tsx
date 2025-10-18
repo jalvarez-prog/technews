@@ -17,7 +17,7 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
       case 'high': return 'border-orange-500 bg-orange-500/10';
       case 'medium': return 'border-yellow-500 bg-yellow-500/10';
       case 'trending': return 'border-purple-500 bg-purple-500/10';
-      case 'hot': return 'border-pink-500 bg-pink-500/10';
+      case 'hot': return 'border-blue-600 bg-blue-600/10';
       default: return 'border-blue-500 bg-blue-500/10';
     }
   };
@@ -28,7 +28,7 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
       case 'high': return 'bg-orange-500/20 text-orange-400 border-orange-500';
       case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500';
       case 'trending': return 'bg-purple-500/20 text-purple-400 border-purple-500';
-      case 'hot': return 'bg-pink-500/20 text-pink-400 border-pink-500';
+      case 'hot': return 'bg-blue-600/20 text-blue-400 border-blue-600';
       default: return 'bg-blue-500/20 text-blue-400 border-blue-500';
     }
   };
@@ -44,8 +44,10 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
     );
   }
 
-  // Duplicar las noticias para loop infinito
-  const duplicatedNews = [...newsData, ...newsData];
+  // Duplicar las noticias múltiples veces para asegurar un loop suave
+  // Necesitamos suficientes copias para que el contenido sea más largo que el viewport
+  const minCopies = Math.max(3, Math.ceil(20 / Math.max(newsData.length, 1)));
+  const duplicatedNews = Array(minCopies).fill(newsData).flat();
 
   return (
     <div className="w-full bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 shadow-lg">
@@ -70,13 +72,15 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
               transform: translateX(0);
             }
             100% {
-              transform: translateX(-50%);
+              transform: translateX(calc(-100% / ${minCopies}));
             }
           }
-          .animate-scroll {
-            animation: scroll 30s linear infinite;
+          .ticker-wrapper {
+            display: flex;
+            width: fit-content;
+            animation: scroll ${Math.max(newsData.length * 8, 40)}s linear infinite;
           }
-          .animate-scroll:hover {
+          .ticker-wrapper:hover {
             animation-play-state: paused;
           }
           .ticker-card {
@@ -88,9 +92,10 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
           }
         `}</style>
 
-        {/* Scrolling cards */}
-        <div className="flex items-center gap-3 h-full pl-32 animate-scroll">
-          {duplicatedNews.map((news, index) => {
+        {/* Scrolling cards container */}
+        <div className="ticker-wrapper items-center h-full">
+          <div className="flex items-center gap-3 pl-32">
+            {duplicatedNews.map((news, index) => {
             const safeUrl = getSafeArticleUrl(news.link, news.source, news.title);
             const isOriginalLink = isValidUrl(news.link);
             
@@ -146,6 +151,7 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
               </a>
             );
           })}
+          </div>
         </div>
       </div>
     </div>

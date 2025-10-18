@@ -171,6 +171,16 @@ class AdvancedImageService {
    * Extrae imágenes del artículo con técnicas avanzadas
    */
   async extractFromArticle(articleUrl) {
+    // Validate articleUrl is a string and valid URL
+    if (!articleUrl || typeof articleUrl !== 'string') {
+      return null;
+    }
+    
+    // Check if it's a valid URL
+    if (!articleUrl.startsWith('http://') && !articleUrl.startsWith('https://')) {
+      return null;
+    }
+    
     try {
       const response = await axios.get(articleUrl, {
         timeout: 7000,
@@ -241,10 +251,17 @@ class AdvancedImageService {
    * Resuelve URLs relativas a absolutas
    */
   resolveUrl(url, baseUrl) {
-    if (!url) return null;
+    // Ensure url is a string
+    if (!url || typeof url !== 'string') return null;
+    
+    // Ensure baseUrl is a string
+    if (!baseUrl || typeof baseUrl !== 'string') return null;
+    
+    // Check if already absolute URL
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
+    
     try {
       const base = new URL(baseUrl);
       if (url.startsWith('//')) {
@@ -263,7 +280,16 @@ class AdvancedImageService {
    * Valida que una URL de imagen sea accesible y válida
    */
   async validateImageUrl(url) {
-    if (!url || this.usedImages.has(url)) return false;
+    // Ensure url is a string and valid URL format
+    if (!url || typeof url !== 'string') return false;
+    
+    // Check if already used
+    if (this.usedImages.has(url)) return false;
+    
+    // Check for valid URL format
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return false;
+    }
     
     try {
       const response = await axios.head(url, {

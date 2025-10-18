@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const cron = require('node-cron');
-const { scrapeAllFeeds } = require('./rssScraperService');
+const { scrapeAllFeeds, processCategory, updateTickerFeatures } = require('./rssScraperService');
 const { createClient } = require('@supabase/supabase-js');
 
 // Configuración de Supabase
@@ -252,21 +252,121 @@ function stopAllJobs() {
  * Ejecuta un job específico manualmente
  */
 async function runJobManually(jobName) {
-  switch(jobName) {
-    case 'rss':
-      await rssScrapingJob._callbacks[0]();
-      break;
-    case 'cleanup':
-      await cleanupJob._callbacks[0]();
-      break;
-    case 'quick':
-      await quickUpdateJob._callbacks[0]();
-      break;
-    case 'stats':
-      await statsUpdateJob._callbacks[0]();
-      break;
-    default:
-      console.error('Unknown job name:', jobName);
+  console.log(`Running ${jobName} job manually...`);
+  
+  // Define rssFeedsConfig for manual jobs
+  const rssFeedsConfig = {
+    'cybersecurity': [
+      'https://feeds.feedburner.com/TheHackersNews',
+      'https://www.darkreading.com/rss.xml'
+    ],
+    'ai': [
+      'https://www.artificialintelligence-news.com/feed/',
+      'https://syncedreview.com/feed/'
+    ],
+    'finance-crypto': [
+      'https://cointelegraph.com/rss',
+      'https://www.coindesk.com/arc/outboundfeeds/rss/'
+    ]
+  };
+  
+  try {
+    switch(jobName) {
+      case 'rss':
+        // Run RSS scraping job directly
+        const startTime = Date.now();
+        console.log(`[CRON] Starting RSS scraping job at ${new Date().toISOString()}`);
+        const results = await scrapeAllFeeds();
+        
+        await logCronExecution('rss_scraping', 'success', {
+          totalNews: results.totalNews,
+          totalErrors: results.totalErrors,
+          duration: Date.now() - startTime
+        });
+        console.log('[CRON] RSS scraping job completed successfully');
+        break;
+        
+      case 'cleanup':
+        // Run cleanup job directly
+        console.log(`[CRON] Starting cleanup job at ${new Date().toISOString()}`);
+        const { error: cleanupError } = await supabase.rpc('cleanup_old_news');
+        if (!cleanupError) {
+          await logCronExecution('cleanup', 'success', {});
+          console.log('[CRON] Cleanup job completed successfully');
+        } else {
+          throw cleanupError;
+        }
+        break;
+        
+      case 'quick':
+        // Run quick update job directly
+        const quickStart = Date.now();
+        console.log(`[CRON] Starting quick update job at ${new Date().toISOString()}`);
+        
+        const criticalCategories = ['cybersecurity', 'ai', 'finance-crypto'];
+        for (const category of criticalCategories) {
+          const feeds = rssFeedsConfig[category] || [];
+          if (feeds.length > 0) {
+            const topFeeds = feeds.slice(0, 2);
+            await processCategory(category, topFeeds);
+          }
+        }
+        
+        await updateTickerFeatures();
+        await logCronExecution('quick_update', 'success', {
+          duration: Date.now() - quickStart
+        });
+        console.log('[CRON] Quick update job completed successfully');
+        break;
+        
+      case 'stats':
+        // Run stats update job directly
+        const statsStart = Date.now();
+        console.log(`[CRON] Starting stats update job at ${new Date().toISOString()}`);
+        
+        const categories = ['cybersecurity', 'ai', 'finance-crypto', 'software-devops', 
+                           'iot', 'cloud', 'data-science', 'quantum'];
+        
+        for (const category of categories) {
+          const { count: dailyCount } = await supabase
+            .from('news')
+            .select('id', { count: 'exact', head: true })
+            .eq('category', category)
+            .gte('pub_date', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+          
+          const { count: totalCount } = await supabase
+            .from('news')
+            .select('id', { count: 'exact', head: true })
+            .eq('category', category);
+          
+          await supabase
+            .from('category_stats')
+            .upsert({
+              category: category,
+              daily_count: dailyCount || 0,
+              total_count: totalCount || 0,
+              last_updated: new Date().toISOString()
+            }, {
+              onConflict: 'category'
+            });
+        }
+        
+        await logCronExecution('stats_update', 'success', {
+          duration: Date.now() - statsStart
+        });
+        console.log('[CRON] Stats update job completed successfully');
+        break;
+        
+      default:
+        console.error('Unknown job name:', jobName);
+        throw new Error(`Unknown job name: ${jobName}`);
+    }
+  } catch (error) {
+    console.error(`Job ${jobName} failed:`, error);
+    await logCronExecution(jobName, 'error', {
+      error: error.message
+    });
+    throw error;
   }
 }
 

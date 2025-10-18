@@ -5,17 +5,22 @@ const Parser = require('rss-parser');
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 const advancedImageService = require('./advancedImageService');
+const { fetchAndSanitizeFeed } = require('./feedSanitizer');
 
 // Configuración de Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY; // Service key para operaciones de servidor
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-// Parser RSS
+// Parser RSS with enhanced error handling
 const parser = new Parser({
   timeout: 30000,
   customFields: {
     item: ['media:content', 'media:thumbnail', 'enclosure']
+  },
+  // Add custom parser options to handle malformed XML
+  requestOptions: {
+    rejectUnauthorized: false
   }
 });
 
@@ -202,8 +207,14 @@ async function processFeed(feedUrl, category) {
   try {
     console.log(`Processing feed: ${feedUrl} for category: ${category}`);
     
-    // Parsear el feed
-    const feed = await parser.parseURL(feedUrl);
+    // Use the robust feed sanitizer to handle problematic feeds
+    const feed = await fetchAndSanitizeFeed(feedUrl);
+    
+    // Check if the feed had errors but returned a structure
+    if (feed.error) {
+      console.warn(`Feed ${feedUrl} returned with errors: ${feed.errorMessage}`);
+      // Continue processing with empty items to update feed status
+    }
     const sourceName = feed.title || feedUrl;
     
     // Actualizar registro de feed
