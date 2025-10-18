@@ -1,0 +1,267 @@
+{
+  "name": "TechHub - Smart Image Assignment",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Schedule Trigger - Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$credentials.supabaseUrl}}/rest/v1/rpc/get_news_without_images",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$credentials.supabaseServiceKey}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$credentials.supabaseServiceKey}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "limit_count",
+              "value": "20"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "name": "Get News Without Images",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.length}}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "c3d4e5f6-a789-0123-cdef-345678901234",
+      "name": "Check If News Found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mapa de categorías a keywords\nconst TOPIC_KEYWORDS = {\n  'cybersecurity': {\n    primary: ['cybersecurity', 'hacker', 'security', 'encryption', 'firewall'],\n    style: 'tech,security,dark,blue'\n  },\n  'ai': {\n    primary: ['artificial intelligence', 'robot', 'machine learning', 'AI', 'neural network'],\n    style: 'futuristic,technology,robot,purple'\n  },\n  'finance-crypto': {\n    primary: ['cryptocurrency', 'bitcoin', 'blockchain', 'ethereum', 'trading'],\n    style: 'financial,money,gold,chart'\n  },\n  'software-devops': {\n    primary: ['programming', 'coding', 'software', 'developer', 'devops'],\n    style: 'code,programming,computer,technology'\n  },\n  'iot': {\n    primary: ['IoT', 'smart device', 'sensor', 'connected', 'smart home'],\n    style: 'smart,device,connected,modern'\n  },\n  'cloud': {\n    primary: ['cloud computing', 'server', 'data center', 'cloud storage'],\n    style: 'cloud,server,technology,blue'\n  },\n  'data-science': {\n    primary: ['data science', 'analytics', 'big data', 'statistics', 'visualization'],\n    style: 'chart,analytics,visualization,data'\n  },\n  'quantum': {\n    primary: ['quantum computing', 'quantum', 'physics', 'quantum processor'],\n    style: 'quantum,physics,science,purple'\n  }\n};\n\nconst items = [];\n\nfor (const item of $input.all()) {\n  const news = item.json;\n  \n  // Extraer keywords del título y descripción\n  const title = news.title || '';\n  const description = news.description || '';\n  const category = news.category || 'tech';\n  \n  const text = `${title} ${description}`.toLowerCase();\n  let keywords = [];\n  \n  // Buscar keywords de la categoría\n  const categoryConfig = TOPIC_KEYWORDS[category];\n  if (categoryConfig) {\n    for (const keyword of categoryConfig.primary) {\n      if (text.includes(keyword.toLowerCase())) {\n        keywords.push(keyword);\n        break;\n      }\n    }\n  }\n  \n  // Si no hay coincidencias, usar primera keyword de la categoría\n  if (keywords.length === 0 && categoryConfig) {\n    keywords.push(categoryConfig.primary[0]);\n  }\n  \n  // Extraer palabras importantes del título\n  const titleWords = title.split(/\\s+/);\n  const importantWord = titleWords.find(word => {\n    const cleaned = word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();\n    return cleaned.length > 4 && \n           !['the', 'and', 'for', 'with', 'from', 'this', 'that', 'which'].includes(cleaned);\n  });\n  \n  if (importantWord) {\n    keywords.push(importantWord.replace(/[^a-zA-Z0-9]/g, ''));\n  }\n  \n  // Crear query para búsqueda de imagen\n  const keywordString = keywords.join(',');\n  const style = categoryConfig ? categoryConfig.style : 'technology';\n  const fullQuery = `${keywordString},${style}`;\n  \n  // Generar URL de imagen usando Unsplash Source (gratuito)\n  const imageUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(fullQuery)}`;\n  \n  items.push({\n    json: {\n      id: news.id,\n      title: title,\n      category: category,\n      keywords: keywordString,\n      image_url: imageUrl,\n      processed_at: new Date().toISOString()\n    }\n  });\n}\n\nreturn items;"
+      },
+      "id": "d4e5f6a7-8901-234b-cdef-456789012345",
+      "name": "Extract Keywords & Generate Image URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$credentials.supabaseUrl}}/rest/v1/news",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$credentials.supabaseServiceKey}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$credentials.supabaseServiceKey}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{$json.id}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"image_url\": \"{{$json.image_url}}\",\n  \"updated_at\": \"{{$json.processed_at}}\"\n}",
+        "options": {}
+      },
+      "id": "e5f6a789-0123-45bc-def0-567890123456",
+      "name": "Update News with Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1050, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst summary = {\n  workflow: 'Image Processing',\n  timestamp: new Date().toISOString(),\n  total_processed: items.length,\n  news_updated: items.map(item => ({\n    id: item.json.id,\n    title: item.json.title ? item.json.title.substring(0, 50) : 'N/A',\n    keywords: item.json.keywords || 'N/A',\n    category: item.json.category || 'N/A'\n  }))\n};\n\nconsole.log('Image Processing Summary:', summary);\n\nreturn [{\n  json: summary\n}];"
+      },
+      "id": "f6a78901-2345-6bcd-ef01-678901234567",
+      "name": "Log Processing Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 250]
+    },
+    {
+      "parameters": {
+        "message": "=✅ Image Processing Complete\\n\\nProcessed: {{$json.total_processed}} news items\\nTime: {{$json.timestamp}}\\n\\nAll news without images have been assigned relevant images from Unsplash.",
+        "additionalFields": {}
+      },
+      "id": "a7890123-4567-8cde-f012-789012345678",
+      "name": "Success Notification",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1450, 250]
+    },
+    {
+      "parameters": {
+        "message": "=ℹ️ No news items found without images.\\n\\nAll news already have images assigned.",
+        "additionalFields": {}
+      },
+      "id": "b8901234-5678-9def-0123-890123456789",
+      "name": "No News Found",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [850, 450]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger - Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Get News Without Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get News Without Images": {
+      "main": [
+        [
+          {
+            "node": "Check If News Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If News Found": {
+      "main": [
+        [
+          {
+            "node": "Extract Keywords & Generate Image URLs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No News Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Keywords & Generate Image URLs": {
+      "main": [
+        [
+          {
+            "node": "Update News with Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update News with Image": {
+      "main": [
+        [
+          {
+            "node": "Log Processing Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Processing Results": {
+      "main": [
+        [
+          {
+            "node": "Success Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1a2b3c4d-5e6f-7890-abcd-ef1234567890",
+  "id": "workflow_image_processing_001",
+  "meta": {
+    "instanceId": "technews_n8n_instance"
+  },
+  "tags": [
+    {
+      "id": "1",
+      "name": "image-processing"
+    },
+    {
+      "id": "2", 
+      "name": "automation"
+    }
+  ]
+}

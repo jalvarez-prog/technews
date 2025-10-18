@@ -5,7 +5,7 @@ import { FeaturedNewsCard } from './FeaturedNewsCard';
 import { TrendingNewsSection } from './TrendingNewsSection';
 import { CategoryStats } from './CategoryStats';
 import { CategoryResources } from './CategoryResources';
-import { NewsFilters, FilterState } from './NewsFilters';
+// import { NewsFilters, FilterState } from './NewsFilters';
 import { Shield, Brain, TrendingUp, Code, Wifi, Cloud, BarChart3, Atom } from 'lucide-react';
 
 interface CategoryNewsFeedProps {
@@ -31,48 +31,16 @@ const categoryIcons = {
 };
 
 export function CategoryNewsFeed({ category, articles, categoryConfig }: CategoryNewsFeedProps) {
-  const [filters, setFilters] = useState<FilterState>({
-    timeRange: 'all',
-    sources: [],
-    tags: []
-  });
+  // const [filters, setFilters] = useState<FilterState>({
+  //   timeRange: 'all',
+  //   sources: [],
+  //   tags: []
+  // });
 
-  // Aplicar filtros a los artículos
+  // Aplicar filtros a los artículos - DISABLED (using all articles without filters)
   const filteredArticles = useMemo(() => {
-    let filtered = [...articles];
-
-    // Filtro por tiempo
-    if (filters.timeRange !== 'all') {
-      const now = new Date();
-      const timeRanges = {
-        today: 24 * 60 * 60 * 1000,
-        week: 7 * 24 * 60 * 60 * 1000,
-        month: 30 * 24 * 60 * 60 * 1000
-      };
-      
-      filtered = filtered.filter(article => {
-        const articleDate = new Date(article.pubDate);
-        return now.getTime() - articleDate.getTime() <= timeRanges[filters.timeRange];
-      });
-    }
-
-    // Filtro por fuentes
-    if (filters.sources.length > 0) {
-      filtered = filtered.filter(article => 
-        filters.sources.includes(article.source)
-      );
-    }
-
-    // Filtro por tags (simulado - en producción vendría del backend)
-    if (filters.tags.length > 0) {
-      filtered = filtered.filter(article => {
-        const articleText = (article.title + ' ' + article.description).toLowerCase();
-        return filters.tags.some(tag => articleText.includes(tag.toLowerCase()));
-      });
-    }
-
-    return filtered;
-  }, [articles, filters]);
+    return [...articles];
+  }, [articles]);
 
   // Seleccionar artículo destacado (el más reciente)
   const featuredArticle = filteredArticles[0];
@@ -109,12 +77,12 @@ export function CategoryNewsFeed({ category, articles, categoryConfig }: Categor
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4">
-        {/* Filtros avanzados */}
-        <NewsFilters 
+        {/* Filtros avanzados - DISABLED */}
+        {/* <NewsFilters 
           category={category}
           categoryColor={categoryConfig.color}
           onFiltersChange={setFilters}
-        />
+        /> */}
 
         {/* Layout principal */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

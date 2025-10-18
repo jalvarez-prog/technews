@@ -4,6 +4,7 @@ require('dotenv').config();
 const Parser = require('rss-parser');
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
+const advancedImageService = require('./advancedImageService');
 
 // Configuración de Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -79,7 +80,8 @@ const rssFeedsConfig = {
 };
 
 /**
- * Extrae la URL de imagen del item RSS
+ * Extrae la URL de imagen del item RSS (función legacy - mantener para compatibilidad)
+ * NOTA: Se recomienda usar getArticleImage del imageService para mejor cobertura
  */
 function extractImageUrl(item) {
   // Intentar diferentes fuentes de imágenes
@@ -223,7 +225,8 @@ async function processFeed(feedUrl, category) {
     for (const item of feed.items.slice(0, 20)) { // Limitar a 20 items por feed
       try {
         const pubDate = new Date(item.pubDate || item.isoDate || Date.now());
-        const imageUrl = extractImageUrl(item);
+        // Usar el servicio avanzado de imágenes con múltiples fuentes y sin repetición
+        const imageUrl = await advancedImageService.getOptimalImage(item, category);
         const severity = calculateSeverity(item.title, item.contentSnippet, category);
         const isFeatured = shouldBeFeatured(severity, pubDate);
         const tags = generateTags(item.title, item.contentSnippet, category, sourceName);
@@ -248,12 +251,64 @@ async function processFeed(feedUrl, category) {
       }
     }
     
-    // Insertar noticias en batch usando la función SQL
+    // Insertar noticias en batch con manejo de duplicados
     if (newsItems.length > 0) {
-      for (const item of newsItems) {
-        await supabase.rpc('insert_news_safe', item);
+      let insertedCount = 0;
+      let updatedCount = 0;
+      
+      // Procesar cada noticia individualmente para manejar duplicados
+      for (const newsItem of newsItems) {
+        try {
+          // Primero verificar si el link ya existe
+          const { data: existing } = await supabase
+            .from('news')
+            .select('id, severity, is_featured')
+            .eq('link', newsItem.link)
+            .single();
+          
+          if (existing) {
+            // Si existe, actualizar solo si es necesario
+            const updates = {};
+            let shouldUpdate = false;
+            
+            // Actualizar severidad si la nueva es más alta
+            if (newsItem.severity === 'critical' && existing.severity !== 'critical') {
+              updates.severity = 'critical';
+              shouldUpdate = true;
+            }
+            
+            // Actualizar is_featured si la nueva debe ser destacada
+            if (newsItem.is_featured && !existing.is_featured) {
+              updates.is_featured = true;
+              shouldUpdate = true;
+            }
+            
+            if (shouldUpdate) {
+              await supabase
+                .from('news')
+                .update(updates)
+                .eq('id', existing.id);
+              updatedCount++;
+            }
+          } else {
+            // Si no existe, insertar
+            const { error: insertError } = await supabase
+              .from('news')
+              .insert([newsItem]);
+              
+            if (!insertError) {
+              insertedCount++;
+            } else if (!insertError.message.includes('duplicate key value')) {
+              // Solo registrar errores que no sean de duplicados
+              console.error(`Error inserting news item:`, insertError);
+            }
+          }
+        } catch (itemError) {
+          console.error(`Error processing news item:`, itemError);
+        }
       }
-      console.log(`Inserted ${newsItems.length} news items from ${feedUrl}`);
+      
+      console.log(`Feed ${feedUrl}: ${insertedCount} inserted, ${updatedCount} updated`);
     }
     
     return { success: true, count: newsItems.length };

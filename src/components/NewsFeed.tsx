@@ -24,8 +24,11 @@ export function NewsFeed({ category }: NewsFeedProps) {
   // Si tenemos artículos y la configuración de categoría, usar el nuevo CategoryNewsFeed
   if (!loading && !error && categoryConfig && articles.length > 0) {
     return (
-      <div>
-        <SlimNewsTicker category={category} />
+      <div className="relative">
+        {/* Ticker fijo debajo del header y nav (73px header + 52px nav = 125px) */}
+        <div className="sticky top-[125px] z-30">
+          <SlimNewsTicker category={category} />
+        </div>
         <Suspense fallback={
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
@@ -42,8 +45,11 @@ export function NewsFeed({ category }: NewsFeedProps) {
   }
 
   return (
-    <div>
-      <SlimNewsTicker category={category} />
+    <div className="relative">
+      {/* Ticker fijo debajo del header y nav (73px header + 52px nav = 125px) */}
+      <div className="sticky top-[125px] z-30">
+        <SlimNewsTicker category={category} />
+      </div>
 
       <div className="w-full py-6">
         <div className="flex-1 max-w-[1200px] mx-auto px-4">

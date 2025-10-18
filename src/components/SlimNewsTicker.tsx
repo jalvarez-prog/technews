@@ -48,9 +48,9 @@ const SlimNewsTicker: React.FC<SlimNewsTickerProps> = ({ category }) => {
   const duplicatedNews = [...newsData, ...newsData];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <div className="w-full bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 shadow-lg">
       {/* Ticker Container */}
-      <div className="relative h-16 overflow-hidden">
+      <div className="relative h-16 overflow-hidden bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
         {/* Live Indicator */}
         <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex items-center gap-2 bg-white dark:bg-gray-900/95 px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-700">
           <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
