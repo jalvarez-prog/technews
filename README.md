@@ -22,8 +22,8 @@ Un agregador de noticias tecnológicas en tiempo real con categorías especializ
 
 1. **Clonar el repositorio**
 ```bash
-git clone git@github.com:jalvarez-prog/technews.git
-cd technews
+git clone git@github.com:jalvarez-prog/technium.git
+cd technium
 ```
 
 2. **Instalar dependencias del frontend**
@@ -92,7 +92,7 @@ NODE_ENV=production node server.js
 ## 📁 Estructura del Proyecto
 
 ```
-technews/
+technium/
 ├── src/                    # Código fuente del frontend
 │   ├── components/         # Componentes React
 │   ├── config/            # Configuraciones (categorías, feeds RSS)
@@ -180,4 +180,4 @@ Abrir un issue en GitHub con:
 
 Jose Alvarez - [@jalvarez-prog](https://github.com/jalvarez-prog)
 
-Link del proyecto: [https://github.com/jalvarez-prog/technews](https://github.com/jalvarez-prog/technews)
+Link del proyecto: [https://github.com/jalvarez-prog/technium](https://github.com/jalvarez-prog/technium)

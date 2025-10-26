@@ -97,7 +97,7 @@ function App() {
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Sistema Operativo</span>
               </div>
               <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
-                TechNews Hub
+                Technium Hub
               </h3>
               <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                 Plataforma premium de agregación de noticias tecnológicas con actualización en tiempo real

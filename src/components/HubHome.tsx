@@ -69,8 +69,8 @@ export function HubHome({ onSelectCategory }: HubHomeProps) {
             
             <h1 className="text-6xl md:text-8xl font-bold mb-8 relative">
               <span className="relative inline-block">
-                <span className="absolute inset-0 text-gradient-animate blur-xl opacity-50">TechNews</span>
-                <span className="relative text-gradient-animate">TechNews</span>
+                <span className="absolute inset-0 text-gradient-animate blur-xl opacity-50">Technium</span>
+                <span className="relative text-gradient-animate">Technium</span>
               </span>
               <span className="text-gray-900 dark:text-white relative">
                 <span className="absolute inset-0 blur-xl opacity-30">Hub</span>

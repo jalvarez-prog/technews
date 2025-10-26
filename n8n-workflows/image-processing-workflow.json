@@ -252,7 +252,7 @@
   "versionId": "1a2b3c4d-5e6f-7890-abcd-ef1234567890",
   "id": "workflow_image_processing_001",
   "meta": {
-    "instanceId": "technews_n8n_instance"
+    "instanceId": "technium_n8n_instance"
   },
   "tags": [
     {

@@ -44,7 +44,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                  TechNews Hub
+                  Technium Hub
                 </h1>
                 <Sparkles className="w-4 h-4 text-yellow-500 animate-pulse" />
               </div>
